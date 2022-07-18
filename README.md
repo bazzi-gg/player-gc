@@ -7,7 +7,7 @@
 ## Table of Contents
 
 - [Install](#install)
-- [Usage](#usage)
+- [Development](#development)
 - [Maintainers](#maintainers)
 - [Contributing](#contributing)
 - [Development](#development)
@@ -19,7 +19,7 @@
 git clone https://github.com/bazzi-gg/player-gc.git
 ```
 
-## Usage
+## Development
 
 1. `PlayerGC/appsettings.example.json`에서 공백인 **value**값을 채웁니다.
 2. 파일명을 `PlayerGC/appsettings.example.json`에서 `PlayerGC/PlayerGC.development.json`으로 변경합니다.
