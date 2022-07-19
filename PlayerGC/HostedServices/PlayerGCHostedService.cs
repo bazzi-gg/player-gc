@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using PlayerGC.Options;
+using System.Net;
 
 namespace PlayerGC.HostedServices
 {
@@ -38,7 +39,7 @@ namespace PlayerGC.HostedServices
                         await _kartriderApi.User.GetUserByNicknameAsync(player.Nickname);
                         _logger.LogInformation($"{player.Nickname}: OK");
                     }
-                    catch (KartriderApiException)
+                    catch (KartriderApiException e) when(e.HttpStatusCode == HttpStatusCode.NotFound)
                     {
                         appDbContext.PlayerSummary.Remove(player);
                         foreach (var playerDetail in appDbContext.PlayerDetail.Where(x => x.Nickname == player.Nickname).ToList())
