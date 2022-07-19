@@ -1,8 +1,10 @@
 ﻿using Bazzigg.Database.Context;
 using Kartrider.Api;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using PlayerGC.Options;
 
 namespace PlayerGC.HostedServices
 {
@@ -11,14 +13,16 @@ namespace PlayerGC.HostedServices
         private readonly ILogger<PlayerGCHostedService> _logger;
         private readonly IKartriderApi _kartriderApi;
         private readonly IDbContextFactory<AppDbContext> _appDbContextFactory;
-
+        private readonly PlayerGCOptions _options = new PlayerGCOptions();
         public PlayerGCHostedService(ILogger<PlayerGCHostedService> logger,
-            IKartriderApi kartriderApi
-            , IDbContextFactory<AppDbContext> appDbContextFactory)
+            IKartriderApi kartriderApi,
+            IDbContextFactory<AppDbContext> appDbContextFactory,
+            IConfiguration configuration)
         {
             _logger = logger;
             _kartriderApi = kartriderApi;
             _appDbContextFactory = appDbContextFactory;
+            configuration.GetSection(PlayerGCOptions.ConfigurationKey).Bind(_options);
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -47,9 +51,8 @@ namespace PlayerGC.HostedServices
                         await appDbContext.SaveChangesAsync(stoppingToken);
                         _logger.LogInformation($"{player.Nickname}: GC");
                     }
-#if !DEBUG
-                await Task.Delay(3000, stoppingToken);
-#endif   
+
+                    await Task.Delay(TimeSpan.FromMilliseconds(_options.LoopDelay), stoppingToken);
                 }
             }
         }
